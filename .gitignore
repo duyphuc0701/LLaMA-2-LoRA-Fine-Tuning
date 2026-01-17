@@ -205,3 +205,15 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Ignore datasets
+data/
+dataset/
+
+# Ignore Hugging Face cache (just in case)
+hf_cache/
+
+# Ignore training results (checkpoints are huge!)
+results/
+checkpoints/
+models/
