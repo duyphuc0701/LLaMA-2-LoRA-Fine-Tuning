@@ -5,10 +5,9 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig,
-    TrainingArguments,
 )
 from peft import LoraConfig
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -74,23 +73,26 @@ def main():
     # ==============================================================================
     # 5. TRAINING ARGUMENTS
     # ==============================================================================
-    training_arguments = TrainingArguments(
+    sft_config = SFTConfig(
         output_dir=args.output_dir,
+        dataset_text_field="text",
+        max_seq_length=512,
         num_train_epochs=args.epochs,
         per_device_train_batch_size=args.batch_size,
-        gradient_accumulation_steps=4, # Simulate larger batch size
+        gradient_accumulation_steps=4,
         optim="paged_adamw_32bit",
-        save_steps=100,      # Save checkpoint every 100 steps
-        logging_steps=25,    # Log loss every 25 steps
+        save_steps=100,
+        logging_steps=25,
         learning_rate=2e-4,
         weight_decay=0.001,
         fp16=True,
-        bf16=False,          # Change to True if using A100
+        bf16=False,
         max_grad_norm=0.3,
         warmup_ratio=0.03,
         group_by_length=True,
         lr_scheduler_type="constant",
-        report_to="none"     # Disable WandB for simplicity
+        report_to="none",
+        packing=False,
     )
 
     # ==============================================================================
@@ -100,10 +102,8 @@ def main():
         model=model,
         train_dataset=dataset,
         peft_config=peft_config,
-        dataset_text_field="text",
-        max_seq_length=512, # Reduce to 256 if OOM
         tokenizer=tokenizer,
-        args=training_arguments,
+        args=sft_config,
     )
 
     print("Starting training...")
