@@ -76,7 +76,7 @@ def main():
     sft_config = SFTConfig(
         output_dir=args.output_dir,
         dataset_text_field="text",
-        max_seq_length=512,
+        max_length=512,
         num_train_epochs=args.epochs,
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=4,
